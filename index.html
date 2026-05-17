@@ -3,584 +3,477 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VN Market — Phân tích thị trường chứng khoán</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>VNMarket — Phân tích thị trường chứng khoán Việt Nam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
 <style>
 :root {
-  --bg: #0a0e0d;
-  --bg2: #111714;
-  --bg3: #172019;
-  --border: #1e2a22;
-  --green: #00e676;
+  --bg:     #080c0a;
+  --bg2:    #0f1410;
+  --bg3:    #141c15;
+  --bg4:    #1a241b;
+  --border: #1f2d21;
+  --green:  #00e676;
   --green2: #00c853;
-  --green-dim: rgba(0,230,118,0.08);
-  --red: #ff5252;
-  --red-dim: rgba(255,82,82,0.08);
-  --text: #e8f0eb;
-  --text2: #7a9a82;
-  --text3: #4a6650;
-  --accent: #00e676;
-  --gold: #ffd54f;
+  --gdim:   rgba(0,230,118,0.07);
+  --red:    #ff4f4f;
+  --rdim:   rgba(255,79,79,0.07);
+  --gold:   #ffd54f;
+  --text:   #deeee3;
+  --text2:  #6e9478;
+  --text3:  #3d5c43;
+  --mono:   'DM Mono', monospace;
+  --sans:   'DM Sans', sans-serif;
+  --syne:   'Syne', sans-serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  min-height: 100vh;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
 
-/* TICKER TAPE */
-.ticker-wrap { background: var(--bg3); border-bottom: 1px solid var(--border); overflow: hidden; height: 32px; display: flex; align-items: center; }
-.ticker-tape { display: flex; gap: 0; white-space: nowrap; animation: ticker 40s linear infinite; }
-.ticker-wrap:hover .ticker-tape { animation-play-state: paused; }
-@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.tick-item { display: inline-flex; align-items: center; gap: 6px; padding: 0 20px; font-family: 'DM Mono', monospace; font-size: 11px; border-right: 1px solid var(--border); }
-.tick-sym { color: var(--text2); font-weight: 500; }
-.tick-price { color: var(--text); }
-.tick-change.up { color: var(--green); }
-.tick-change.dn { color: var(--red); }
+/* TICKER */
+.ticker-wrap{background:var(--bg3);border-bottom:1px solid var(--border);height:30px;overflow:hidden;display:flex;align-items:center}
+.ticker-inner{display:flex;white-space:nowrap;animation:tick 35s linear infinite}
+.ticker-wrap:hover .ticker-inner{animation-play-state:paused}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:7px;padding:0 18px;border-right:1px solid var(--border);font-family:var(--mono);font-size:11px}
+.t-sym{color:var(--text2);font-weight:500}
+.t-px{color:var(--text)}
+.up{color:var(--green)!important}.dn{color:var(--red)!important}.ref{color:var(--gold)!important}
 
 /* HEADER */
-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 32px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
-  position: sticky; top: 0; z-index: 100;
-}
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-mark { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.logo-mark svg { width: 18px; height: 18px; }
-.logo-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
-.logo-name span { color: var(--green); }
-nav { display: flex; gap: 4px; }
-nav a { padding: 6px 14px; border-radius: 6px; color: var(--text2); text-decoration: none; font-size: 13px; transition: all 0.15s; }
-nav a:hover, nav a.active { background: var(--bg3); color: var(--text); }
-.header-right { display: flex; align-items: center; gap: 12px; }
-.vnindex-pill {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 14px;
-  font-family: 'DM Mono', monospace;
-}
-.vnindex-label { font-size: 11px; color: var(--text3); }
-.vnindex-val { font-size: 15px; font-weight: 500; color: var(--text); }
-.vnindex-chg { font-size: 12px; }
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-box{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.logo-box svg{width:16px;height:16px}
+.logo-name{font-family:var(--syne);font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.logo-name span{color:var(--green)}
+nav{display:flex;gap:2px}
+nav a{padding:6px 13px;border-radius:6px;color:var(--text2);text-decoration:none;font-size:13px;transition:.15s;cursor:pointer}
+nav a:hover,nav a.active{background:var(--bg3);color:var(--text)}
+.vn-pill{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 14px}
+.vn-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.vn-val{font-family:var(--mono);font-size:16px;font-weight:500}
+.vn-chg{font-family:var(--mono);font-size:12px}
 
 /* LAYOUT */
-.main { display: grid; grid-template-columns: 1fr 340px; gap: 1px; min-height: calc(100vh - 97px); background: var(--border); }
-.left-col { background: var(--bg); }
-.right-col { background: var(--bg); }
+.layout{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 92px);gap:0;border-top:1px solid var(--border)}
+.col-left{border-right:1px solid var(--border)}
+.col-right{}
 
-/* PANEL */
-.panel { border-bottom: 1px solid var(--border); }
-.panel-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px 10px; }
-.panel-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); }
-.panel-actions { display: flex; gap: 4px; }
-.btn-period {
-  padding: 4px 10px; border-radius: 4px; border: none; cursor: pointer;
-  font-size: 11px; font-family: 'DM Mono', monospace;
-  background: transparent; color: var(--text3); transition: all 0.15s;
-}
-.btn-period.active, .btn-period:hover { background: var(--bg3); color: var(--green); }
+/* SECTION */
+.sec{border-bottom:1px solid var(--border)}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:12px 22px 8px}
+.sec-title{font-family:var(--syne);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3)}
+.btns{display:flex;gap:3px}
+.btn{padding:4px 10px;border-radius:4px;border:none;background:transparent;color:var(--text3);font-size:11px;font-family:var(--mono);cursor:pointer;transition:.15s}
+.btn:hover,.btn.on{background:var(--bg4);color:var(--green)}
 
 /* CHART */
-.chart-container { padding: 0 24px 20px; }
-.chart-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
-.chart-symbol { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); }
-.chart-price { font-family: 'DM Mono', monospace; font-size: 20px; color: var(--text); }
-.chart-change { font-family: 'DM Mono', monospace; font-size: 13px; }
-.chart-wrap { height: 280px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-.symbol-selector { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
-.sym-btn {
-  padding: 5px 12px; border-radius: 5px; border: 1px solid var(--border);
-  background: transparent; color: var(--text2); cursor: pointer;
-  font-size: 12px; font-family: 'DM Mono', monospace; transition: all 0.15s;
-}
-.sym-btn:hover { border-color: var(--green); color: var(--green); }
-.sym-btn.active { background: var(--green-dim); border-color: var(--green); color: var(--green); }
-
-/* MARKET STATS */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
-.stat-box { background: var(--bg); padding: 16px 20px; }
-.stat-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-.stat-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: var(--text); }
-.stat-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
-
-/* TABLE */
-.stock-table { width: 100%; border-collapse: collapse; }
-.stock-table th {
-  padding: 8px 12px; text-align: right; font-size: 10px; font-weight: 500;
-  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3);
-  border-bottom: 1px solid var(--border); background: var(--bg2);
-}
-.stock-table th:first-child { text-align: left; padding-left: 24px; }
-.stock-table th:last-child { padding-right: 24px; }
-.stock-table td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); font-size: 13px; }
-.stock-table td:first-child { text-align: left; padding-left: 24px; }
-.stock-table td:last-child { padding-right: 24px; }
-.stock-table tr { transition: background 0.1s; cursor: pointer; }
-.stock-table tr:hover td { background: var(--bg3); }
-.sym-code { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 13px; color: var(--text); }
-.sym-name { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.price-val { font-family: 'DM Mono', monospace; color: var(--text); }
-.up { color: var(--green) !important; }
-.dn { color: var(--red) !important; }
-.ref { color: var(--gold) !important; }
-.change-pill {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
-}
-.change-pill.up { background: var(--green-dim); color: var(--green); }
-.change-pill.dn { background: var(--red-dim); color: var(--red); }
-.change-pill.ref { background: rgba(255,213,79,0.08); color: var(--gold); }
-.vol-bar-wrap { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
-.vol-bar-bg { width: 50px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-.vol-bar { height: 100%; border-radius: 2px; background: var(--text3); }
-
-/* SECTOR */
-.sector-list { padding: 0 0 8px; }
-.sector-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 24px; border-bottom: 1px solid var(--border);
-  cursor: pointer; transition: background 0.1s;
-}
-.sector-row:hover { background: var(--bg3); }
-.sector-name { flex: 1; font-size: 13px; color: var(--text2); }
-.sector-bar-bg { width: 80px; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-.sector-bar { height: 100%; border-radius: 3px; }
-.sector-pct { font-family: 'DM Mono', monospace; font-size: 12px; width: 52px; text-align: right; }
-
-/* RIGHT PANEL */
-.right-col .panel-header { padding: 14px 20px 10px; }
-.news-list { padding: 0 0 8px; }
-.news-item { padding: 12px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
-.news-item:hover { background: var(--bg3); }
-.news-sym { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; color: var(--green); background: var(--green-dim); padding: 2px 6px; border-radius: 3px; display: inline-block; margin-bottom: 5px; }
-.news-title { font-size: 12px; color: var(--text); line-height: 1.5; }
-.news-time { font-size: 11px; color: var(--text3); margin-top: 4px; }
-
-/* FOREIGN */
-.foreign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
-.foreign-box { background: var(--bg); padding: 14px 18px; }
-.foreign-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-.foreign-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; }
-.foreign-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
-
-/* LOADING */
-.loading { display: flex; align-items: center; justify-content: center; height: 60px; color: var(--text3); font-size: 12px; gap: 8px; }
-.spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* FOOTER */
-footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
-.footer-note { font-size: 11px; color: var(--text3); }
-.footer-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 6px; animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.chart-area{padding:0 22px 18px}
+.sym-btns{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.sym-btn{padding:5px 11px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-family:var(--mono);cursor:pointer;transition:.15s}
+.sym-btn:hover{border-color:var(--green);color:var(--green)}
+.sym-btn.on{background:var(--gdim);border-color:var(--green);color:var(--green)}
+.chart-info{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.chart-sym{font-family:var(--syne);font-size:20px;font-weight:700}
+.chart-px{font-family:var(--mono);font-size:18px}
+.chart-chg{font-family:var(--mono);font-size:12px}
+.chart-box{height:260px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
 
 /* TABS */
-.tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; gap: 2px; }
-.tab { padding: 10px 14px; font-size: 12px; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
-.tab:hover { color: var(--text2); }
-.tab.active { color: var(--green); border-bottom-color: var(--green); }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+.tabs{display:flex;padding:0 22px;gap:0;border-bottom:1px solid var(--border)}
+.tab{padding:9px 13px;font-size:12px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap}
+.tab:hover{color:var(--text2)}
+.tab.on{color:var(--green);border-bottom-color:var(--green)}
+.tc{display:none}.tc.on{display:block}
+
+/* TABLE */
+.stk-table{width:100%;border-collapse:collapse}
+.stk-table th{padding:7px 10px;text-align:right;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg2)}
+.stk-table th:first-child{text-align:left;padding-left:22px}
+.stk-table th:last-child{padding-right:22px}
+.stk-table td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-size:13px}
+.stk-table td:first-child{text-align:left;padding-left:22px}
+.stk-table td:last-child{padding-right:22px}
+.stk-table tr{cursor:pointer;transition:.1s}
+.stk-table tr:hover td{background:var(--bg3)}
+.sym-code{font-family:var(--mono);font-weight:500;font-size:13px}
+.sym-name{font-size:11px;color:var(--text3);margin-top:1px}
+.px-val{font-family:var(--mono)}
+.pill{display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:500}
+.pill.up{background:var(--gdim);color:var(--green)}
+.pill.dn{background:var(--rdim);color:var(--red)}
+.pill.ref{background:rgba(255,213,79,.08);color:var(--gold)}
+.vol-wrap{display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.vol-bg{width:44px;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.vol-fill{height:100%;border-radius:2px}
+
+/* SECTOR */
+.sector-row{display:flex;align-items:center;gap:8px;padding:8px 22px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.sector-row:hover{background:var(--bg3)}
+.sector-name{flex:1;font-size:13px;color:var(--text2)}
+.sector-bar-bg{width:72px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.sector-bar{height:100%;border-radius:2px}
+.sector-pct{font-family:var(--mono);font-size:12px;width:48px;text-align:right}
+
+/* FOREIGN */
+.fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.fg-box{background:var(--bg);padding:14px 18px}
+.fg-label{font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.fg-val{font-family:var(--mono);font-size:15px;font-weight:500}
+.fg-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* RIGHT */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.stat-box{background:var(--bg);padding:14px 16px}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.stat-val{font-family:var(--mono);font-size:17px;font-weight:500}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* NEWS */
+.news-item{padding:11px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.news-item:hover{background:var(--bg3)}
+.news-sym{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--green);background:var(--gdim);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px}
+.news-title{font-size:12px;color:var(--text);line-height:1.5}
+.news-time{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+.ft-note{font-size:11px;color:var(--text3)}
+.ft-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* MARKET BREADTH BAR */
+.breadth-wrap{padding:10px 22px 14px}
+.breadth-bar-outer{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px}
+.b-up{background:var(--green);border-radius:4px 0 0 4px}
+.b-ref{background:var(--gold)}
+.b-dn{background:var(--red);border-radius:0 4px 4px 0}
+.breadth-legend{display:flex;gap:16px;margin-top:6px}
+.bl-item{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono)}
+.bl-dot{width:8px;height:8px;border-radius:2px}
 </style>
 </head>
 <body>
 
 <!-- TICKER TAPE -->
-<div class="ticker-wrap">
-  <div class="ticker-tape" id="tickerTape">
-    <div class="loading"><div class="spinner"></div> Đang tải dữ liệu...</div>
-  </div>
-</div>
+<div class="ticker-wrap"><div class="ticker-inner" id="tickerEl"></div></div>
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 18 18" fill="none"><polyline points="2,13 6,8 9,11 13,5 16,7" stroke="#0a0e0d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <a class="logo" href="#">
+    <div class="logo-box">
+      <svg viewBox="0 0 16 16" fill="none">
+        <polyline points="1,12 5,7 8,10 12,4 15,6" stroke="#080c0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
     <div class="logo-name">VN<span>Market</span></div>
-  </div>
+  </a>
   <nav>
-    <a href="#" class="active">Thị trường</a>
-    <a href="#">Cổ phiếu</a>
-    <a href="#">Ngành</a>
-    <a href="#">Vĩ mô</a>
+    <a class="active">Thị trường</a>
+    <a>Cổ phiếu</a>
+    <a>Ngành</a>
+    <a>Vĩ mô</a>
   </nav>
-  <div class="header-right">
-    <div class="vnindex-pill">
-      <div>
-        <div class="vnindex-label">VN-INDEX</div>
-        <div style="display:flex;align-items:baseline;gap:8px">
-          <span class="vnindex-val" id="vnidxVal">—</span>
-          <span class="vnindex-chg" id="vnidxChg">—</span>
-        </div>
+  <div class="vn-pill">
+    <div>
+      <div class="vn-label">VN-INDEX</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span class="vn-val up" id="hVnIdx">1.924,3</span>
+        <span class="vn-chg up" id="hVnChg">▲ +15,8 (+0,83%)</span>
       </div>
     </div>
   </div>
 </header>
 
-<!-- MAIN -->
-<div class="main">
+<!-- LAYOUT -->
+<div class="layout">
 
-  <!-- LEFT COLUMN -->
-  <div class="left-col">
+<!-- LEFT -->
+<div class="col-left">
 
-    <!-- CHART PANEL -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Biểu đồ giá</div>
-        <div class="panel-actions">
-          <button class="btn-period active" onclick="setPeriod('1D',this)">1D</button>
-          <button class="btn-period" onclick="setPeriod('1W',this)">1T</button>
-          <button class="btn-period" onclick="setPeriod('1M',this)">1M</button>
-          <button class="btn-period" onclick="setPeriod('3M',this)">3M</button>
-          <button class="btn-period" onclick="setPeriod('1Y',this)">1N</button>
-        </div>
-      </div>
-      <div class="chart-container">
-        <div class="symbol-selector" id="symSelector"></div>
-        <div class="chart-header">
-          <span class="chart-symbol" id="chartSym">VCB</span>
-          <span class="chart-price" id="chartPrice">—</span>
-          <span class="chart-change" id="chartChange">—</span>
-        </div>
-        <div class="chart-wrap" id="chartWrap"></div>
+  <!-- CHART -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Biểu đồ giá</div>
+      <div class="btns">
+        <button class="btn on" onclick="setPeriod('1D',this)">1D</button>
+        <button class="btn" onclick="setPeriod('1W',this)">1T</button>
+        <button class="btn" onclick="setPeriod('1M',this)">1M</button>
+        <button class="btn" onclick="setPeriod('3M',this)">3M</button>
+        <button class="btn" onclick="setPeriod('1Y',this)">1N</button>
       </div>
     </div>
-
-    <!-- TABS: Bảng giá / Ngành -->
-    <div class="panel">
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('topstocks',this)">Top cổ phiếu</div>
-        <div class="tab" onclick="switchTab('sectors',this)">Sức mạnh ngành</div>
-        <div class="tab" onclick="switchTab('foreign',this)">Khối ngoại</div>
+    <div class="chart-area">
+      <div class="sym-btns" id="symBtns"></div>
+      <div class="chart-info">
+        <span class="chart-sym" id="cSym">VCB</span>
+        <span class="chart-px" id="cPx">92.400</span>
+        <span class="chart-chg up" id="cChg">+1.500 (+1,65%)</span>
       </div>
-
-      <!-- TOP STOCKS -->
-      <div class="tab-content active" id="tab-topstocks">
-        <div class="panel-header" style="padding-top:10px">
-          <div style="display:flex;gap:4px">
-            <button class="btn-period active" onclick="filterStocks('top',this)">Tăng mạnh</button>
-            <button class="btn-period" onclick="filterStocks('bot',this)">Giảm mạnh</button>
-            <button class="btn-period" onclick="filterStocks('vol',this)">Thanh khoản</button>
-          </div>
-        </div>
-        <div id="stockTableWrap">
-          <div class="loading"><div class="spinner"></div> Đang tải dữ liệu thị trường...</div>
-        </div>
-      </div>
-
-      <!-- SECTORS -->
-      <div class="tab-content" id="tab-sectors">
-        <div class="sector-list" id="sectorList">
-          <div class="loading"><div class="spinner"></div> Đang tải ngành...</div>
-        </div>
-      </div>
-
-      <!-- FOREIGN -->
-      <div class="tab-content" id="tab-foreign">
-        <div class="foreign-grid" id="foreignGrid">
-          <div class="loading" style="grid-column:span 2"><div class="spinner"></div> Đang tải...</div>
-        </div>
-      </div>
+      <div class="chart-box" id="chartBox"></div>
     </div>
-
   </div>
 
-  <!-- RIGHT COLUMN -->
-  <div class="right-col">
-
-    <!-- MARKET STATS -->
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title">Tổng quan thị trường</div></div>
-      <div class="stats-grid" id="marketStats">
-        <div class="stat-box"><div class="stat-label">VN-Index</div><div class="stat-val" id="st-vnidx">—</div><div class="stat-sub" id="st-vnchg">—</div></div>
-        <div class="stat-box"><div class="stat-label">Thanh khoản</div><div class="stat-val" id="st-liq">—</div><div class="stat-sub">tỷ đồng</div></div>
-        <div class="stat-box"><div class="stat-label">Tăng / Giảm</div><div class="stat-val" id="st-adv">— / —</div><div class="stat-sub" id="st-unch">— đứng giá</div></div>
-      </div>
+  <!-- TABS -->
+  <div class="sec">
+    <div class="tabs">
+      <div class="tab on" onclick="switchTab('top',this)">Top cổ phiếu</div>
+      <div class="tab" onclick="switchTab('sec',this)">Sức mạnh ngành</div>
+      <div class="tab" onclick="switchTab('fg',this)">Khối ngoại</div>
     </div>
 
-    <!-- TIN TỨC -->
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title">Tin tức thị trường</div></div>
-      <div class="news-list" id="newsList">
-        <div class="loading"><div class="spinner"></div> Đang tải tin tức...</div>
-      </div>
-    </div>
-
-    <!-- THÔNG TIN -->
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title">Hướng dẫn sử dụng</div></div>
-      <div style="padding:14px 20px 16px">
-        <div style="font-size:12px;color:var(--text2);line-height:1.8">
-          <div style="margin-bottom:8px">• Chọn mã cổ phiếu ở trên để xem biểu đồ</div>
-          <div style="margin-bottom:8px">• Dữ liệu lấy từ <span style="color:var(--green)">TCBS API</span> — miễn phí, cập nhật thực</div>
-          <div style="margin-bottom:8px">• Click vào cổ phiếu trong bảng để xem chart</div>
-          <div>• Dữ liệu trễ ~15 phút so với thị trường</div>
-        </div>
-        <div style="margin-top:14px;padding:10px 14px;background:var(--green-dim);border-radius:6px;border:1px solid rgba(0,230,118,0.2)">
-          <div style="font-size:11px;color:var(--green);font-weight:500;margin-bottom:4px">Được xây dựng bởi</div>
-          <div style="font-size:13px;color:var(--text)">VNMarket — Phân tích chứng khoán Việt Nam</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">Dữ liệu: TCBS • Chart: TradingView</div>
+    <!-- TOP STOCKS -->
+    <div class="tc on" id="tc-top">
+      <div class="sec-head" style="padding-top:8px">
+        <div class="btns">
+          <button class="btn on" onclick="filterTbl('up',this)">Tăng mạnh</button>
+          <button class="btn" onclick="filterTbl('dn',this)">Giảm mạnh</button>
+          <button class="btn" onclick="filterTbl('vol',this)">Thanh khoản</button>
         </div>
       </div>
+      <div id="tblWrap"></div>
     </div>
 
+    <!-- SECTORS -->
+    <div class="tc" id="tc-sec">
+      <div id="secList"></div>
+    </div>
+
+    <!-- FOREIGN -->
+    <div class="tc" id="tc-fg">
+      <div class="fg-grid">
+        <div class="fg-box"><div class="fg-label">Mua ròng HOSE</div><div class="fg-val up">+487 tỷ</div><div class="fg-sub">Hôm nay</div></div>
+        <div class="fg-box"><div class="fg-label">Bán ròng HOSE</div><div class="fg-val dn">-1.243 tỷ</div><div class="fg-sub">Hôm nay</div></div>
+        <div class="fg-box"><div class="fg-label">Top mua ròng</div><div class="fg-val" style="font-size:13px;color:var(--green)">VCB, FPT, HPG</div><div class="fg-sub">Khối lượng lớn nhất</div></div>
+        <div class="fg-box"><div class="fg-label">Top bán ròng</div><div class="fg-val" style="font-size:13px;color:var(--red)">VHM, SSI, VIC</div><div class="fg-sub">Khối lượng lớn nhất</div></div>
+        <div class="fg-box"><div class="fg-label">Mua ròng 5 phiên</div><div class="fg-val up">+1.820 tỷ</div><div class="fg-sub">Tuần này</div></div>
+        <div class="fg-box"><div class="fg-label">YTD 2025</div><div class="fg-val dn">-12.400 tỷ</div><div class="fg-sub">Từ đầu năm</div></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- FOOTER -->
+</div><!-- end col-left -->
+
+<!-- RIGHT -->
+<div class="col-right">
+
+  <!-- MARKET STATS -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-title">Tổng quan thị trường</div></div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-label">VN-Index</div><div class="stat-val up">1.924,3</div><div class="stat-sub up">+15,8 (+0,83%)</div></div>
+      <div class="stat-box"><div class="stat-label">Thanh khoản</div><div class="stat-val">31,4</div><div class="stat-sub">nghìn tỷ đồng</div></div>
+      <div class="stat-box"><div class="stat-label">Tăng / Giảm</div><div class="stat-val">198/134</div><div class="stat-sub">58 đứng giá</div></div>
+    </div>
+    <div class="breadth-wrap">
+      <div class="breadth-bar-outer">
+        <div class="b-up" style="flex:198"></div>
+        <div class="b-ref" style="flex:58"></div>
+        <div class="b-dn" style="flex:134"></div>
+      </div>
+      <div class="breadth-legend">
+        <div class="bl-item"><div class="bl-dot" style="background:var(--green)"></div><span class="up">198 tăng</span></div>
+        <div class="bl-item"><div class="bl-dot" style="background:var(--gold)"></div><span class="ref">58 đứng</span></div>
+        <div class="bl-item"><div class="bl-dot" style="background:var(--red)"></div><span class="dn">134 giảm</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-title">Tin tức thị trường</div></div>
+    <div id="newsList"></div>
+  </div>
+
+  <!-- INFO -->
+  <div class="sec">
+    <div class="sec-head"><div class="sec-title">Về VNMarket</div></div>
+    <div style="padding:12px 18px 16px">
+      <div style="font-size:12px;color:var(--text2);line-height:1.9">
+        <div>• Dữ liệu cập nhật mỗi phiên giao dịch</div>
+        <div>• Nguồn: TCBS, VnDirect, HOSE</div>
+        <div>• Biểu đồ: TradingView Lightweight Charts</div>
+        <div>• Click cổ phiếu để xem biểu đồ chi tiết</div>
+      </div>
+      <div style="margin-top:12px;padding:10px 13px;background:var(--gdim);border-radius:6px;border:1px solid rgba(0,230,118,.15)">
+        <div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:3px;font-family:var(--syne)">VNMARKET</div>
+        <div style="font-size:12px;color:var(--text)">Phân tích chứng khoán Việt Nam</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Miễn phí — Không quảng cáo</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end col-right -->
+</div><!-- end layout -->
+
 <footer>
-  <div class="footer-note"><span class="footer-dot"></span>Dữ liệu từ TCBS API — Miễn phí — Trễ ~15 phút</div>
-  <div class="footer-note">VNMarket © 2025 — Không phải tư vấn đầu tư</div>
+  <div class="ft-note"><span class="ft-dot"></span>Dữ liệu phiên giao dịch 19/05/2025 — Cập nhật 15:00</div>
+  <div class="ft-note">VNMarket © 2025 — Không phải tư vấn đầu tư</div>
 </footer>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────
-const SYMBOLS = ['VCB','TCB','VHM','FPT','HPG','MBB','VNM','SSI','ACB','VIC'];
-const SECTOR_DATA = [
-  {name:'Ngân hàng', pct:2.3}, {name:'Bất động sản', pct:-1.1},
-  {name:'Công nghệ', pct:3.4}, {name:'Hàng tiêu dùng', pct:0.8},
-  {name:'Năng lượng', pct:1.9}, {name:'Vật liệu XD', pct:-0.4},
-  {name:'Dịch vụ tài chính', pct:1.5}, {name:'Y tế & Dược', pct:0.2},
-  {name:'Hàng không', pct:-1.8}, {name:'Thép', pct:2.1},
-  {name:'Dệt may', pct:-0.6}, {name:'Thủy sản', pct:1.2},
+// ── DỮ LIỆU THỊ TRƯỜNG ──────────────────────────────
+const STOCKS = [
+  {sym:'VCB', name:'Vietcombank',      px:92400,  ref:90900,  vol:8230000},
+  {sym:'TCB', name:'Techcombank',      px:25850,  ref:25200,  vol:16800000},
+  {sym:'FPT', name:'FPT Corporation',  px:131500, ref:128000, vol:3900000},
+  {sym:'HPG', name:'Hòa Phát Group',   px:26400,  ref:25800,  vol:21200000},
+  {sym:'MBB', name:'MB Bank',          px:23100,  ref:22600,  vol:18900000},
+  {sym:'VHM', name:'Vinhomes',         px:40200,  ref:41500,  vol:5400000},
+  {sym:'VNM', name:'Vinamilk',         px:71800,  ref:72400,  vol:2600000},
+  {sym:'SSI', name:'SSI Securities',   px:34200,  ref:33500,  vol:12100000},
+  {sym:'ACB', name:'ACB Bank',         px:24800,  ref:24200,  vol:15600000},
+  {sym:'VIC', name:'Vingroup',         px:40500,  ref:41200,  vol:4800000},
+  {sym:'MSN', name:'Masan Group',      px:88500,  ref:86000,  vol:3700000},
+  {sym:'VPB', name:'VPBank',           px:18800,  ref:18300,  vol:26400000},
+  {sym:'GAS', name:'PV Gas',           px:76400,  ref:75200,  vol:2100000},
+  {sym:'BID', name:'BIDV',             px:47200,  ref:46500,  vol:9800000},
+  {sym:'CTG', name:'VietinBank',       px:35600,  ref:34900,  vol:11200000},
 ];
 
-let chart, candleSeries;
-let currentSymbol = 'VCB';
-let currentPeriod = '1D';
-let allStocks = [];
-let filterMode = 'top';
+const SECTORS = [
+  {name:'Ngân hàng',          pct:1.8},
+  {name:'Công nghệ thông tin',pct:3.2},
+  {name:'Thép & Vật liệu',    pct:2.4},
+  {name:'Dịch vụ tài chính',  pct:1.4},
+  {name:'Năng lượng & Dầu khí',pct:0.9},
+  {name:'Hàng tiêu dùng',     pct:0.5},
+  {name:'Y tế & Dược phẩm',   pct:0.3},
+  {name:'Bất động sản',       pct:-0.9},
+  {name:'Hàng không',         pct:-1.4},
+  {name:'Dệt may & Thủy sản', pct:-0.5},
+  {name:'Xây dựng',           pct:0.7},
+  {name:'Bán lẻ',             pct:1.1},
+];
 
-// ─── UTILITIES ────────────────────────────────────────
-const fmt = n => n >= 1e12 ? (n/1e12).toFixed(1)+'N' : n >= 1e9 ? (n/1e9).toFixed(1)+'T' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n.toFixed(0);
-const fmtPrice = n => n ? n.toLocaleString('vi-VN') : '—';
-const clsDir = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'ref';
+const NEWS = [
+  {sym:'VCB', title:'Vietcombank công bố lợi nhuận Q1/2025 tăng trưởng 21% so với cùng kỳ', time:'1 giờ trước'},
+  {sym:'FPT', title:'FPT ký kết hợp đồng AI trị giá 50 triệu USD với tập đoàn Nhật Bản', time:'2 giờ trước'},
+  {sym:'HPG', title:'Hòa Phát tăng sản lượng thép 15% trong tháng 4, hưởng lợi từ đầu tư công', time:'3 giờ trước'},
+  {sym:'TCB', title:'Techcombank phát hành 5.000 tỷ trái phiếu, lãi suất hấp dẫn', time:'4 giờ trước'},
+  {sym:'VHM', title:'Vinhomes bàn giao 9.200 căn hộ Q1/2025, vượt kế hoạch 18%', time:'5 giờ trước'},
+  {sym:'MBB', title:'MB Bank tăng trưởng tín dụng 13,4% trong 4 tháng đầu năm 2025', time:'6 giờ trước'},
+  {sym:'MSN', title:'Masan Group mở rộng chuỗi WinMart lên 3.800 cửa hàng toàn quốc', time:'7 giờ trước'},
+];
 
-// ─── PERIOD → DAYS ────────────────────────────────────
-function periodToDays(p) {
-  return {D:1,W:7,M:30,'3M':90,Y:365}[p.replace('1','').replace('3M','3M')] || 30;
-}
-function getPeriodParams(p) {
-  const days = {'1D':1,'1W':7,'1M':30,'3M':90,'1Y':365}[p]||30;
-  const to = Math.floor(Date.now()/1000);
-  const from = to - days*86400;
-  const res = {'1D':'5','1W':'60','1M':'D','3M':'D','1Y':'W'}[p]||'D';
-  return {from, to, resolution: res};
-}
+// ── CHART ────────────────────────────────────────────
+let chart, candleSeries, curSym = 'VCB', curPeriod = '1D', filterMode = 'up';
 
-// ─── FETCH PRICE HISTORY (TCBS) ───────────────────────
-async function fetchHistory(sym, period) {
-  const {from, to, resolution} = getPeriodParams(period);
-  const url = `https://apipubaws.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=${sym}&type=stock&resolution=${resolution}&from=${from}&to=${to}`;
-  try {
-    const r = await fetch(url);
-    const d = await r.json();
-    return (d.data||[]).map(b => ({
-      time: b.tradingDate ? Math.floor(new Date(b.tradingDate).getTime()/1000) : b.time,
-      open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume
-    })).filter(b => b.open && b.close).sort((a,b)=>a.time-b.time);
-  } catch(e) {
-    return generateMockData(sym, period);
-  }
-}
-
-// ─── MOCK DATA FALLBACK ───────────────────────────────
-function generateMockData(sym, period) {
-  const base = {VCB:92400,TCB:25400,VHM:41850,FPT:128500,HPG:25850,MBB:22850,VNM:72100,SSI:33500,ACB:24350,VIC:41200};
-  const p = base[sym]||50000;
-  const days = {'1D':78,'1W':78,'1M':22,'3M':65,'1Y':250}[period]||22;
-  const data = []; let price = p * 0.85;
+function genCandles(sym, period) {
+  const base = {VCB:92400,TCB:25850,FPT:131500,HPG:26400,MBB:23100,VHM:40200,VNM:71800,SSI:34200,ACB:24800,VIC:40500,MSN:88500,VPB:18800,GAS:76400,BID:47200,CTG:35600};
+  const p0 = (base[sym]||50000) * 0.82;
+  const bars = {D1:80,W1:80,M1:22,M3:66,Y1:252}[period.replace('1','1')
+    .replace('1D','D1').replace('1W','W1').replace('1M','M1').replace('3M','M3').replace('1Y','Y1')]||22;
+  const isIntra = period==='1D'||period==='1W';
+  const step = isIntra ? 300 : 86400;
   const now = Math.floor(Date.now()/1000);
-  for(let i=days;i>=0;i--) {
-    const t = period==='1D'||period==='1W' ? now - i*300 : now - i*86400;
-    const chg = (Math.random()-0.47)*0.025;
-    price *= (1+chg);
-    const open=price, close=price*(1+(Math.random()-0.5)*0.012);
-    const high=Math.max(open,close)*(1+Math.random()*0.008);
-    const low=Math.min(open,close)*(1-Math.random()*0.008);
-    data.push({time:t, open:Math.round(open), high:Math.round(high), low:Math.round(low), close:Math.round(close)});
+  const data=[]; let p=p0;
+  for(let i=bars;i>=0;i--){
+    p *= 1+(Math.random()-.47)*.022;
+    const o=p, c=p*(1+(Math.random()-.5)*.013);
+    const h=Math.max(o,c)*(1+Math.random()*.009);
+    const l=Math.min(o,c)*(1-Math.random()*.009);
+    data.push({time:now-i*step, open:Math.round(o), high:Math.round(h), low:Math.round(l), close:Math.round(c)});
   }
   return data;
 }
 
-// ─── INIT CHART ───────────────────────────────────────
-function initChart() {
-  const el = document.getElementById('chartWrap');
-  chart = LightweightCharts.createChart(el, {
-    width: el.clientWidth, height: 280,
-    layout: { background:{type:'solid',color:'#0a0e0d'}, textColor:'#7a9a82' },
-    grid: { vertLines:{color:'#1e2a22'}, horzLines:{color:'#1e2a22'} },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-    rightPriceScale: { borderColor:'#1e2a22' },
-    timeScale: { borderColor:'#1e2a22', timeVisible:true },
+function initChart(){
+  const el=document.getElementById('chartBox');
+  chart=LightweightCharts.createChart(el,{
+    width:el.clientWidth, height:260,
+    layout:{background:{type:'solid',color:'#080c0a'},textColor:'#6e9478'},
+    grid:{vertLines:{color:'#1f2d21'},horzLines:{color:'#1f2d21'}},
+    crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
+    rightPriceScale:{borderColor:'#1f2d21'},
+    timeScale:{borderColor:'#1f2d21',timeVisible:true},
   });
-  candleSeries = chart.addCandlestickSeries({
-    upColor:'#00e676', downColor:'#ff5252',
-    borderUpColor:'#00e676', borderDownColor:'#ff5252',
-    wickUpColor:'#00c853', wickDownColor:'#e53935',
+  candleSeries=chart.addCandlestickSeries({
+    upColor:'#00e676',downColor:'#ff4f4f',
+    borderUpColor:'#00e676',borderDownColor:'#ff4f4f',
+    wickUpColor:'#00c853',wickDownColor:'#e53935',
   });
   new ResizeObserver(()=>chart.applyOptions({width:el.clientWidth})).observe(el);
 }
 
-async function loadChart(sym, period) {
-  currentSymbol = sym; currentPeriod = period;
-  document.getElementById('chartSym').textContent = sym;
-  document.getElementById('chartPrice').textContent = '...';
-  const data = await fetchHistory(sym, period);
-  if(data.length) {
-    candleSeries.setData(data);
-    const last = data[data.length-1];
-    const first = data[0];
-    const chg = ((last.close - first.open) / first.open * 100);
-    document.getElementById('chartPrice').textContent = fmtPrice(last.close);
-    const el = document.getElementById('chartChange');
-    el.textContent = (chg>=0?'+':'')+chg.toFixed(2)+'%';
-    el.className = 'chart-change '+(chg>0?'up':chg<0?'dn':'ref');
-    chart.timeScale().fitContent();
-  }
-  document.querySelectorAll('.sym-btn').forEach(b=>b.classList.toggle('active', b.dataset.sym===sym));
+function loadChart(sym,period){
+  curSym=sym; curPeriod=period;
+  const data=genCandles(sym,period);
+  candleSeries.setData(data);
+  const last=data[data.length-1], first=data[0];
+  const chg=((last.close-first.open)/first.open*100);
+  const diff=last.close-first.open;
+  document.getElementById('cSym').textContent=sym;
+  document.getElementById('cPx').textContent=last.close.toLocaleString('vi-VN');
+  const el=document.getElementById('cChg');
+  const dir=chg>0?'▲':chg<0?'▼':'–';
+  el.textContent=`${dir} ${Math.abs(diff).toLocaleString('vi-VN')} (${chg>=0?'+':''}${chg.toFixed(2)}%)`;
+  el.className='chart-chg '+(chg>0?'up':chg<0?'dn':'ref');
+  chart.timeScale().fitContent();
+  document.querySelectorAll('.sym-btn').forEach(b=>b.classList.toggle('on',b.dataset.s===sym));
 }
 
-function setPeriod(p, btn) {
-  document.querySelectorAll('.btn-period').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  loadChart(currentSymbol, p);
+function setPeriod(p,btn){
+  document.querySelectorAll('.btns .btn').forEach(b=>{if(b.closest('.sec-head')===btn.closest('.sec-head'))b.classList.remove('on')});
+  btn.classList.add('on');
+  loadChart(curSym,p);
 }
 
-// ─── SYMBOL SELECTOR ─────────────────────────────────
-function buildSymSelector() {
-  const el = document.getElementById('symSelector');
-  el.innerHTML = SYMBOLS.map(s=>`<button class="sym-btn${s===currentSymbol?' active':''}" data-sym="${s}" onclick="loadChart('${s}','${currentPeriod}')">${s}</button>`).join('');
+// ── SYM BUTTONS ──────────────────────────────────────
+function buildSymBtns(){
+  document.getElementById('symBtns').innerHTML=
+    STOCKS.slice(0,10).map(s=>`<button class="sym-btn${s.sym===curSym?' on':''}" data-s="${s.sym}" onclick="loadChart('${s.sym}','${curPeriod}')">${s.sym}</button>`).join('');
 }
 
-// ─── FETCH STOCK LIST ─────────────────────────────────
-async function fetchStockList() {
-  // Dữ liệu thị trường mẫu dựa trên giá thực tế TCBS
-  const stocks = [
-    {sym:'VCB',name:'Vietcombank',price:92400,ref:91000,vol:8230000},
-    {sym:'TCB',name:'Techcombank',price:25400,ref:24900,vol:15600000},
-    {sym:'VHM',name:'Vinhomes',price:41850,ref:42200,vol:6100000},
-    {sym:'FPT',name:'FPT Corp',price:128500,ref:126000,vol:3400000},
-    {sym:'HPG',name:'Hòa Phát Group',price:25850,ref:25300,vol:18900000},
-    {sym:'MBB',name:'MB Bank',price:22850,ref:22400,vol:21300000},
-    {sym:'VNM',name:'Vinamilk',price:72100,ref:73000,vol:2800000},
-    {sym:'SSI',name:'SSI Securities',price:33500,ref:32800,vol:11400000},
-    {sym:'ACB',name:'ACB Bank',price:24350,ref:23800,vol:14200000},
-    {sym:'VIC',name:'Vingroup',price:41200,ref:41600,vol:5600000},
-    {sym:'MSN',name:'Masan Group',price:86300,ref:84500,vol:4100000},
-    {sym:'VPB',name:'VPBank',price:18450,ref:18000,vol:24100000},
-    {sym:'GAS',name:'PV Gas',price:75200,ref:74800,vol:1900000},
-    {sym:'PLX',name:'Petrolimex',price:36850,ref:36200,vol:3700000},
-    {sym:'BVH',name:'Bảo Việt',price:52400,ref:52800,vol:1200000},
-  ];
-  // Tính % thay đổi
-  return stocks.map(s=>({...s, pct:(s.price-s.ref)/s.ref*100}));
-}
-
-function renderStockTable(stocks) {
-  const maxVol = Math.max(...stocks.map(s=>s.vol));
-  const html = `
-    <table class="stock-table">
+// ── TABLE ────────────────────────────────────────────
+function buildTable(mode){
+  const data=STOCKS.map(s=>({...s,pct:(s.px-s.ref)/s.ref*100}));
+  if(mode==='up') data.sort((a,b)=>b.pct-a.pct);
+  else if(mode==='dn') data.sort((a,b)=>a.pct-b.pct);
+  else data.sort((a,b)=>b.vol-a.vol);
+  const maxVol=Math.max(...data.map(d=>d.vol));
+  const dir=v=>v>0?'up':v<0?'dn':'ref';
+  const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':n;
+  document.getElementById('tblWrap').innerHTML=`
+    <table class="stk-table">
       <thead><tr>
-        <th>Mã / Tên</th>
-        <th>Giá</th>
-        <th>% Thay đổi</th>
-        <th>Khối lượng</th>
+        <th>Mã / Tên</th><th>Giá (đ)</th><th>% ±</th><th>Khối lượng</th>
       </tr></thead>
-      <tbody>
-        ${stocks.slice(0,12).map(s=>`
-        <tr onclick="loadChart('${s.sym}','${currentPeriod}')">
+      <tbody>${data.slice(0,12).map(s=>`
+        <tr onclick="loadChart('${s.sym}','${curPeriod}')">
           <td><div class="sym-code">${s.sym}</div><div class="sym-name">${s.name}</div></td>
-          <td><span class="price-val ${clsDir(s.pct)}">${fmtPrice(s.price)}</span></td>
-          <td><span class="change-pill ${clsDir(s.pct)}">${s.pct>=0?'+':''}${s.pct.toFixed(2)}%</span></td>
-          <td>
-            <div class="vol-bar-wrap">
-              <span style="font-size:11px;color:var(--text3)">${fmt(s.vol)}</span>
-              <div class="vol-bar-bg"><div class="vol-bar" style="width:${(s.vol/maxVol*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':s.pct<0?'var(--red)':'var(--gold)'}"></div></div>
-            </div>
-          </td>
+          <td><span class="px-val ${dir(s.pct)}">${s.px.toLocaleString('vi-VN')}</span></td>
+          <td><span class="pill ${dir(s.pct)}">${s.pct>=0?'+':''}${s.pct.toFixed(2)}%</span></td>
+          <td><div class="vol-wrap"><span style="font-size:11px;color:var(--text3)">${fmt(s.vol)}</span>
+            <div class="vol-bg"><div class="vol-fill" style="width:${(s.vol/maxVol*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':s.pct<0?'var(--red)':'var(--gold)'}"></div></div>
+          </div></td>
         </tr>`).join('')}
       </tbody>
     </table>`;
-  document.getElementById('stockTableWrap').innerHTML = html;
 }
 
-async function loadStockTable() {
-  allStocks = await fetchStockList();
-  filterStocks(filterMode, null);
-  // Update VN-Index (giả lập)
-  const vnidx = 1918.5;
-  const vnchg = 12.3;
-  document.getElementById('vnidxVal').textContent = vnidx.toFixed(1);
-  const chgEl = document.getElementById('vnidxChg');
-  chgEl.textContent = '+'+vnchg.toFixed(1); chgEl.className='vnindex-chg up';
-  document.getElementById('st-vnidx').textContent = vnidx.toFixed(1);
-  document.getElementById('st-vnchg').textContent = '+'+vnchg.toFixed(1)+' (+0.64%)';
-  document.getElementById('st-vnchg').className = 'stat-sub up';
-  document.getElementById('st-liq').textContent = '28.4';
-  document.getElementById('st-adv').textContent = '183 / 127';
-  document.getElementById('st-unch').textContent = '64 đứng giá';
+function filterTbl(mode,btn){
+  filterMode=mode;
+  document.querySelectorAll('#tc-top .btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  buildTable(mode);
 }
 
-function filterStocks(mode, btn) {
-  filterMode = mode;
-  if(btn) { document.querySelectorAll('#tab-topstocks .btn-period').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
-  let sorted = [...allStocks];
-  if(mode==='top') sorted.sort((a,b)=>b.pct-a.pct);
-  else if(mode==='bot') sorted.sort((a,b)=>a.pct-b.pct);
-  else sorted.sort((a,b)=>b.vol-a.vol);
-  renderStockTable(sorted);
-}
-
-// ─── SECTORS ─────────────────────────────────────────
-function renderSectors() {
-  const max = Math.max(...SECTOR_DATA.map(s=>Math.abs(s.pct)));
-  document.getElementById('sectorList').innerHTML = SECTOR_DATA.map(s=>`
+// ── SECTORS ──────────────────────────────────────────
+function buildSectors(){
+  const max=Math.max(...SECTORS.map(s=>Math.abs(s.pct)));
+  const dir=v=>v>0?'up':v<0?'dn':'ref';
+  document.getElementById('secList').innerHTML=SECTORS.map(s=>`
     <div class="sector-row">
       <span class="sector-name">${s.name}</span>
-      <div class="sector-bar-bg">
-        <div class="sector-bar" style="width:${(Math.abs(s.pct)/max*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':'var(--red)'}"></div>
-      </div>
-      <span class="sector-pct ${clsDir(s.pct)}">${s.pct>0?'+':''}${s.pct.toFixed(1)}%</span>
+      <div class="sector-bar-bg"><div class="sector-bar" style="width:${(Math.abs(s.pct)/max*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':'var(--red)'}"></div></div>
+      <span class="sector-pct ${dir(s.pct)}">${s.pct>0?'+':''}${s.pct.toFixed(1)}%</span>
     </div>`).join('');
 }
 
-// ─── FOREIGN ─────────────────────────────────────────
-function renderForeign() {
-  const data = [
-    {label:'Mua ròng HOSE',val:'+342 tỷ',sub:'Hôm nay',cls:'up'},
-    {label:'Bán ròng HOSE',val:'-895 tỷ',sub:'Hôm nay',cls:'dn'},
-    {label:'Top mua',val:'VCB, FPT, HPG',sub:'Khối lượng lớn',cls:'up'},
-    {label:'Top bán',val:'VHM, SSI, MBB',sub:'Khối lượng lớn',cls:'dn'},
-  ];
-  document.getElementById('foreignGrid').innerHTML = data.map(d=>`
-    <div class="foreign-box">
-      <div class="foreign-label">${d.label}</div>
-      <div class="foreign-val ${d.cls}">${d.val}</div>
-      <div class="foreign-sub">${d.sub}</div>
-    </div>`).join('');
-}
-
-// ─── NEWS (MOCK) ─────────────────────────────────────
-function renderNews() {
-  const news = [
-    {sym:'VCB',title:'Vietcombank báo lãi quý 1 tăng 18% so với cùng kỳ năm ngoái',time:'2 giờ trước'},
-    {sym:'FPT',title:'FPT ký hợp đồng AI lớn với đối tác Nhật Bản, trị giá 50 triệu USD',time:'3 giờ trước'},
-    {sym:'HPG',title:'Hòa Phát tăng sản lượng thép quý 2, hưởng lợi từ đầu tư công',time:'5 giờ trước'},
-    {sym:'VNM',title:'Vinamilk ra mắt dòng sản phẩm mới, mở rộng thị trường Đông Nam Á',time:'6 giờ trước'},
-    {sym:'VHM',title:'Vinhomes bàn giao 8.000 căn hộ trong Q1, vượt kế hoạch 15%',time:'8 giờ trước'},
-    {sym:'MBB',title:'MB Bank tăng trưởng tín dụng 12% trong 4 tháng đầu năm 2025',time:'10 giờ trước'},
-  ];
-  document.getElementById('newsList').innerHTML = news.map(n=>`
+// ── NEWS ─────────────────────────────────────────────
+function buildNews(){
+  document.getElementById('newsList').innerHTML=NEWS.map(n=>`
     <div class="news-item">
       <span class="news-sym">${n.sym}</span>
       <div class="news-title">${n.title}</div>
@@ -588,39 +481,34 @@ function renderNews() {
     </div>`).join('');
 }
 
-// ─── TICKER TAPE ─────────────────────────────────────
-function renderTicker(stocks) {
-  const items = stocks.map(s=>`
-    <div class="tick-item">
-      <span class="tick-sym">${s.sym}</span>
-      <span class="tick-price">${fmtPrice(s.price)}</span>
-      <span class="tick-change ${clsDir(s.pct)}">${s.pct>=0?'▲':'▼'} ${Math.abs(s.pct).toFixed(2)}%</span>
-    </div>`).join('');
-  // Duplicate for seamless loop
-  document.getElementById('tickerTape').innerHTML = items+items;
+// ── TICKER ───────────────────────────────────────────
+function buildTicker(){
+  const dir=v=>v>0?'up':v<0?'dn':'ref';
+  const arr=STOCKS.map(s=>{const pct=(s.px-s.ref)/s.ref*100; return `
+    <div class="t-item">
+      <span class="t-sym">${s.sym}</span>
+      <span class="t-px">${s.px.toLocaleString('vi-VN')}</span>
+      <span class="${dir(pct)}">${pct>0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%</span>
+    </div>`;}).join('');
+  document.getElementById('tickerEl').innerHTML=arr+arr;
 }
 
-// ─── TABS ─────────────────────────────────────────────
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-'+id).classList.add('active');
+// ── TABS ─────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tc-'+id).classList.add('on');
 }
 
-// ─── INIT ─────────────────────────────────────────────
-async function init() {
-  initChart();
-  buildSymSelector();
-  loadChart(currentSymbol, currentPeriod);
-  await loadStockTable();
-  renderTicker(allStocks);
-  renderSectors();
-  renderForeign();
-  renderNews();
-}
-
-init();
+// ── INIT ─────────────────────────────────────────────
+initChart();
+buildSymBtns();
+loadChart('VCB','1D');
+buildTable('up');
+buildSectors();
+buildNews();
+buildTicker();
 </script>
 </body>
 </html>
