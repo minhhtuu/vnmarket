@@ -3,377 +3,323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VNMarket — Phân tích thị trường chứng khoán Việt Nam</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>VNMarket — Phân tích chứng khoán Việt Nam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
 <style>
-:root {
-  --bg:     #080c0a;
-  --bg2:    #0f1410;
-  --bg3:    #141c15;
-  --bg4:    #1a241b;
-  --border: #1f2d21;
-  --green:  #00e676;
-  --green2: #00c853;
-  --gdim:   rgba(0,230,118,0.07);
-  --red:    #ff4f4f;
-  --rdim:   rgba(255,79,79,0.07);
-  --gold:   #ffd54f;
-  --text:   #deeee3;
-  --text2:  #6e9478;
-  --text3:  #3d5c43;
-  --mono:   'DM Mono', monospace;
-  --sans:   'DM Sans', sans-serif;
-  --syne:   'Syne', sans-serif;
+:root{
+  --bg:#080c0a;--bg2:#0f1410;--bg3:#141c15;--bg4:#1a2a1c;
+  --border:#1f2d21;--green:#00e676;--gdim:rgba(0,230,118,.08);
+  --red:#ff4f4f;--rdim:rgba(255,79,79,.08);--gold:#ffd54f;
+  --text:#deeee3;--t2:#6e9478;--t3:#3d5c43;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--syne:'Syne',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
-
-/* TICKER */
-.ticker-wrap{background:var(--bg3);border-bottom:1px solid var(--border);height:30px;overflow:hidden;display:flex;align-items:center}
-.ticker-inner{display:flex;white-space:nowrap;animation:tick 35s linear infinite}
-.ticker-wrap:hover .ticker-inner{animation-play-state:paused}
-@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.t-item{display:inline-flex;align-items:center;gap:7px;padding:0 18px;border-right:1px solid var(--border);font-family:var(--mono);font-size:11px}
-.t-sym{color:var(--text2);font-weight:500}
-.t-px{color:var(--text)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
 .up{color:var(--green)!important}.dn{color:var(--red)!important}.ref{color:var(--gold)!important}
 
+/* TICKER */
+.ticker{background:var(--bg3);border-bottom:1px solid var(--border);height:30px;overflow:hidden;display:flex;align-items:center}
+.ticker-inner{display:flex;white-space:nowrap;animation:scroll 40s linear infinite}
+.ticker:hover .ticker-inner{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:7px;padding:0 16px;border-right:1px solid var(--border);font-family:var(--mono);font-size:11px}
+
 /* HEADER */
-header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-box{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center}
-.logo-box svg{width:16px;height:16px}
-.logo-name{font-family:var(--syne);font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:16px}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.logo-icon{width:28px;height:28px;background:var(--green);border-radius:6px;display:grid;place-items:center}
+.logo-icon svg{width:15px;height:15px}
+.logo-name{font-family:var(--syne);font-size:16px;font-weight:700;color:var(--text)}
 .logo-name span{color:var(--green)}
-nav{display:flex;gap:2px}
-nav a{padding:6px 13px;border-radius:6px;color:var(--text2);text-decoration:none;font-size:13px;transition:.15s;cursor:pointer}
-nav a:hover,nav a.active{background:var(--bg3);color:var(--text)}
-.vn-pill{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 14px}
-.vn-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
-.vn-val{font-family:var(--mono);font-size:16px;font-weight:500}
-.vn-chg{font-family:var(--mono);font-size:12px}
+.search-wrap{position:relative;flex:1;max-width:340px}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px 8px 36px;color:var(--text);font-size:13px;font-family:var(--sans);outline:none;transition:.2s}
+.search-input:focus{border-color:var(--green)}
+.search-input::placeholder{color:var(--t3)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none}
+.sdrop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg3);border:1px solid var(--border);border-radius:8px;z-index:300;display:none;max-height:280px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.sdrop.open{display:block}
+.sdi{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:.1s}
+.sdi:last-child{border-bottom:none}
+.sdi:hover{background:var(--bg4)}
+.sdi-sym{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--green);width:44px;flex-shrink:0}
+.sdi-name{font-size:12px;color:var(--t2);flex:1}
+.sdi-pct{font-family:var(--mono);font-size:12px}
+.vn-pill{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 13px;flex-shrink:0}
+.vn-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.vn-val{font-family:var(--mono);font-size:15px;font-weight:500}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 92px);gap:0;border-top:1px solid var(--border)}
-.col-left{border-right:1px solid var(--border)}
-.col-right{}
-
-/* SECTION */
+.layout{display:grid;grid-template-columns:1fr 300px;min-height:calc(100vh - 90px)}
+.col-l{border-right:1px solid var(--border)}
 .sec{border-bottom:1px solid var(--border)}
-.sec-head{display:flex;align-items:center;justify-content:space-between;padding:12px 22px 8px}
-.sec-title{font-family:var(--syne);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3)}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:11px 20px 8px}
+.st{font-family:var(--syne);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--t3)}
 .btns{display:flex;gap:3px}
-.btn{padding:4px 10px;border-radius:4px;border:none;background:transparent;color:var(--text3);font-size:11px;font-family:var(--mono);cursor:pointer;transition:.15s}
+.btn{padding:4px 9px;border-radius:4px;border:none;background:transparent;color:var(--t3);font-size:11px;font-family:var(--mono);cursor:pointer;transition:.15s}
 .btn:hover,.btn.on{background:var(--bg4);color:var(--green)}
 
 /* CHART */
-.chart-area{padding:0 22px 18px}
-.sym-btns{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.sym-btn{padding:5px 11px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-family:var(--mono);cursor:pointer;transition:.15s}
-.sym-btn:hover{border-color:var(--green);color:var(--green)}
-.sym-btn.on{background:var(--gdim);border-color:var(--green);color:var(--green)}
-.chart-info{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
-.chart-sym{font-family:var(--syne);font-size:20px;font-weight:700}
-.chart-px{font-family:var(--mono);font-size:18px}
-.chart-chg{font-family:var(--mono);font-size:12px}
-.chart-box{height:260px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.ca{padding:0 20px 16px}
+.sym-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+.sbtn{padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--t2);font-size:12px;font-family:var(--mono);cursor:pointer;transition:.15s}
+.sbtn:hover{border-color:var(--green);color:var(--green)}
+.sbtn.on{background:var(--gdim);border-color:var(--green);color:var(--green)}
+.ci{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.c-sym{font-family:var(--syne);font-size:22px;font-weight:700}
+.c-px{font-family:var(--mono);font-size:18px}
+.c-chg{font-family:var(--mono);font-size:12px}
+#chartBox{height:260px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
 
 /* TABS */
-.tabs{display:flex;padding:0 22px;gap:0;border-bottom:1px solid var(--border)}
-.tab{padding:9px 13px;font-size:12px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap}
-.tab:hover{color:var(--text2)}
-.tab.on{color:var(--green);border-bottom-color:var(--green)}
+.tabs{display:flex;padding:0 20px;border-bottom:1px solid var(--border)}
+.tab{padding:9px 12px;font-size:12px;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s}
+.tab:hover{color:var(--t2)}.tab.on{color:var(--green);border-bottom-color:var(--green)}
 .tc{display:none}.tc.on{display:block}
 
 /* TABLE */
-.stk-table{width:100%;border-collapse:collapse}
-.stk-table th{padding:7px 10px;text-align:right;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg2)}
-.stk-table th:first-child{text-align:left;padding-left:22px}
-.stk-table th:last-child{padding-right:22px}
-.stk-table td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-size:13px}
-.stk-table td:first-child{text-align:left;padding-left:22px}
-.stk-table td:last-child{padding-right:22px}
-.stk-table tr{cursor:pointer;transition:.1s}
-.stk-table tr:hover td{background:var(--bg3)}
-.sym-code{font-family:var(--mono);font-weight:500;font-size:13px}
-.sym-name{font-size:11px;color:var(--text3);margin-top:1px}
-.px-val{font-family:var(--mono)}
-.pill{display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:500}
-.pill.up{background:var(--gdim);color:var(--green)}
-.pill.dn{background:var(--rdim);color:var(--red)}
-.pill.ref{background:rgba(255,213,79,.08);color:var(--gold)}
-.vol-wrap{display:flex;align-items:center;gap:5px;justify-content:flex-end}
-.vol-bg{width:44px;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
-.vol-fill{height:100%;border-radius:2px}
+table{width:100%;border-collapse:collapse}
+th{padding:7px 10px;text-align:right;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);border-bottom:1px solid var(--border);background:var(--bg2)}
+th:first-child{text-align:left;padding-left:20px}th:last-child{padding-right:20px}
+td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-size:13px}
+td:first-child{text-align:left;padding-left:20px}td:last-child{padding-right:20px}
+tr{cursor:pointer;transition:.1s}tr:hover td{background:var(--bg3)}
+.sc{font-family:var(--mono);font-weight:500}.sn{font-size:11px;color:var(--t3);margin-top:1px}
+.pxv{font-family:var(--mono)}
+.pill{display:inline-flex;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:500}
+.pill.up{background:var(--gdim);color:var(--green)}.pill.dn{background:var(--rdim);color:var(--red)}.pill.ref{background:rgba(255,213,79,.08);color:var(--gold)}
+.vb{display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.vbg{width:40px;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.vbf{height:100%;border-radius:2px}
 
 /* SECTOR */
-.sector-row{display:flex;align-items:center;gap:8px;padding:8px 22px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
-.sector-row:hover{background:var(--bg3)}
-.sector-name{flex:1;font-size:13px;color:var(--text2)}
-.sector-bar-bg{width:72px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
-.sector-bar{height:100%;border-radius:2px}
-.sector-pct{font-family:var(--mono);font-size:12px;width:48px;text-align:right}
-
-/* FOREIGN */
-.fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
-.fg-box{background:var(--bg);padding:14px 18px}
-.fg-label{font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
-.fg-val{font-family:var(--mono);font-size:15px;font-weight:500}
-.fg-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.sr{display:flex;align-items:center;gap:8px;padding:8px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.sr:hover{background:var(--bg3)}
+.sn2{flex:1;font-size:13px;color:var(--t2)}
+.sbg{width:68px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.sb2{height:100%;border-radius:2px}
+.sp{font-family:var(--mono);font-size:12px;width:46px;text-align:right}
 
 /* RIGHT */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
-.stat-box{background:var(--bg);padding:14px 16px}
-.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.stat-val{font-family:var(--mono);font-size:17px;font-weight:500}
-.stat-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.stat{background:var(--bg);padding:13px 14px}
+.slabel{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.sval{font-family:var(--mono);font-size:16px;font-weight:500}
+.ssub{font-size:11px;color:var(--t2);margin-top:2px}
+.bw{padding:10px 18px 14px}
+.bo{display:flex;height:7px;border-radius:4px;overflow:hidden;gap:1px}
+.bu{background:var(--green)}.bm{background:var(--gold)}.bd{background:var(--red)}
+.bl{display:flex;gap:14px;margin-top:6px}
+.bli{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono)}
+.bld{width:8px;height:8px;border-radius:2px}
+.ni{padding:10px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.ni:hover{background:var(--bg3)}
+.ns{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--green);background:var(--gdim);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px}
+.nt{font-size:12px;color:var(--text);line-height:1.5}
+.ntime{font-size:11px;color:var(--t3);margin-top:3px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.fb{background:var(--bg);padding:13px 16px}
+.fl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.fv{font-family:var(--mono);font-size:14px;font-weight:500}
+.fs2{font-size:11px;color:var(--t2);margin-top:2px}
 
-/* NEWS */
-.news-item{padding:11px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
-.news-item:hover{background:var(--bg3)}
-.news-sym{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--green);background:var(--gdim);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px}
-.news-title{font-size:12px;color:var(--text);line-height:1.5}
-.news-time{font-size:11px;color:var(--text3);margin-top:3px}
-
-/* FOOTER */
-footer{background:var(--bg2);border-top:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
-.ft-note{font-size:11px;color:var(--text3)}
-.ft-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s ease-in-out infinite}
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:12px 24px;display:flex;justify-content:space-between}
+.fn{font-size:11px;color:var(--t3)}
+.fdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* MARKET BREADTH BAR */
-.breadth-wrap{padding:10px 22px 14px}
-.breadth-bar-outer{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px}
-.b-up{background:var(--green);border-radius:4px 0 0 4px}
-.b-ref{background:var(--gold)}
-.b-dn{background:var(--red);border-radius:0 4px 4px 0}
-.breadth-legend{display:flex;gap:16px;margin-top:6px}
-.bl-item{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono)}
-.bl-dot{width:8px;height:8px;border-radius:2px}
 </style>
 </head>
 <body>
 
-<!-- TICKER TAPE -->
-<div class="ticker-wrap"><div class="ticker-inner" id="tickerEl"></div></div>
+<div class="ticker"><div class="ticker-inner" id="tickerEl"></div></div>
 
-<!-- HEADER -->
 <header>
-  <a class="logo" href="#">
-    <div class="logo-box">
-      <svg viewBox="0 0 16 16" fill="none">
-        <polyline points="1,12 5,7 8,10 12,4 15,6" stroke="#080c0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 15 15" fill="none">
+        <polyline points="1,11 5,6 8,9 12,3 14,5" stroke="#080c0a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <div class="logo-name">VN<span>Market</span></div>
-  </a>
-  <nav>
-    <a class="active">Thị trường</a>
-    <a>Cổ phiếu</a>
-    <a>Ngành</a>
-    <a>Vĩ mô</a>
-  </nav>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" type="text" placeholder="Tìm mã cổ phiếu... VCB, FPT, HPG" autocomplete="off">
+    <div class="sdrop" id="sdrop"></div>
+  </div>
+
   <div class="vn-pill">
     <div>
       <div class="vn-label">VN-INDEX</div>
-      <div style="display:flex;align-items:baseline;gap:8px">
-        <span class="vn-val up" id="hVnIdx">1.924,3</span>
-        <span class="vn-chg up" id="hVnChg">▲ +15,8 (+0,83%)</span>
+      <div style="display:flex;align-items:baseline;gap:7px">
+        <span class="vn-val up">1.924,3</span>
+        <span style="font-family:var(--mono);font-size:11px" class="up">▲ +15,8 (+0,83%)</span>
       </div>
     </div>
   </div>
 </header>
 
-<!-- LAYOUT -->
 <div class="layout">
+<div class="col-l">
 
-<!-- LEFT -->
-<div class="col-left">
-
-  <!-- CHART -->
   <div class="sec">
-    <div class="sec-head">
-      <div class="sec-title">Biểu đồ giá</div>
+    <div class="sh">
+      <div class="st">Biểu đồ giá</div>
       <div class="btns">
-        <button class="btn on" onclick="setPeriod('1D',this)">1D</button>
-        <button class="btn" onclick="setPeriod('1W',this)">1T</button>
-        <button class="btn" onclick="setPeriod('1M',this)">1M</button>
-        <button class="btn" onclick="setPeriod('3M',this)">3M</button>
-        <button class="btn" onclick="setPeriod('1Y',this)">1N</button>
+        <button class="btn on" onclick="setPeriod(1,this)">1D</button>
+        <button class="btn" onclick="setPeriod(7,this)">1T</button>
+        <button class="btn" onclick="setPeriod(30,this)">1M</button>
+        <button class="btn" onclick="setPeriod(90,this)">3M</button>
+        <button class="btn" onclick="setPeriod(365,this)">1N</button>
       </div>
     </div>
-    <div class="chart-area">
-      <div class="sym-btns" id="symBtns"></div>
-      <div class="chart-info">
-        <span class="chart-sym" id="cSym">VCB</span>
-        <span class="chart-px" id="cPx">92.400</span>
-        <span class="chart-chg up" id="cChg">+1.500 (+1,65%)</span>
+    <div class="ca">
+      <div class="sym-row" id="symRow"></div>
+      <div class="ci">
+        <span class="c-sym" id="cSym">VCB</span>
+        <span class="c-px" id="cPx"></span>
+        <span class="c-chg" id="cChg"></span>
       </div>
-      <div class="chart-box" id="chartBox"></div>
+      <div id="chartBox"></div>
     </div>
   </div>
 
-  <!-- TABS -->
   <div class="sec">
     <div class="tabs">
       <div class="tab on" onclick="switchTab('top',this)">Top cổ phiếu</div>
       <div class="tab" onclick="switchTab('sec',this)">Sức mạnh ngành</div>
       <div class="tab" onclick="switchTab('fg',this)">Khối ngoại</div>
     </div>
-
-    <!-- TOP STOCKS -->
     <div class="tc on" id="tc-top">
-      <div class="sec-head" style="padding-top:8px">
+      <div class="sh" style="padding-top:8px">
         <div class="btns">
-          <button class="btn on" onclick="filterTbl('up',this)">Tăng mạnh</button>
-          <button class="btn" onclick="filterTbl('dn',this)">Giảm mạnh</button>
-          <button class="btn" onclick="filterTbl('vol',this)">Thanh khoản</button>
+          <button class="btn on" onclick="filterStocks('up',this)">Tăng mạnh</button>
+          <button class="btn" onclick="filterStocks('dn',this)">Giảm mạnh</button>
+          <button class="btn" onclick="filterStocks('vol',this)">Thanh khoản</button>
         </div>
       </div>
-      <div id="tblWrap"></div>
+      <div id="tblEl"></div>
     </div>
-
-    <!-- SECTORS -->
-    <div class="tc" id="tc-sec">
-      <div id="secList"></div>
-    </div>
-
-    <!-- FOREIGN -->
+    <div class="tc" id="tc-sec"><div id="secEl"></div></div>
     <div class="tc" id="tc-fg">
-      <div class="fg-grid">
-        <div class="fg-box"><div class="fg-label">Mua ròng HOSE</div><div class="fg-val up">+487 tỷ</div><div class="fg-sub">Hôm nay</div></div>
-        <div class="fg-box"><div class="fg-label">Bán ròng HOSE</div><div class="fg-val dn">-1.243 tỷ</div><div class="fg-sub">Hôm nay</div></div>
-        <div class="fg-box"><div class="fg-label">Top mua ròng</div><div class="fg-val" style="font-size:13px;color:var(--green)">VCB, FPT, HPG</div><div class="fg-sub">Khối lượng lớn nhất</div></div>
-        <div class="fg-box"><div class="fg-label">Top bán ròng</div><div class="fg-val" style="font-size:13px;color:var(--red)">VHM, SSI, VIC</div><div class="fg-sub">Khối lượng lớn nhất</div></div>
-        <div class="fg-box"><div class="fg-label">Mua ròng 5 phiên</div><div class="fg-val up">+1.820 tỷ</div><div class="fg-sub">Tuần này</div></div>
-        <div class="fg-box"><div class="fg-label">YTD 2025</div><div class="fg-val dn">-12.400 tỷ</div><div class="fg-sub">Từ đầu năm</div></div>
+      <div class="fg">
+        <div class="fb"><div class="fl">Mua ròng HOSE</div><div class="fv up">+487 tỷ</div><div class="fs2">Hôm nay</div></div>
+        <div class="fb"><div class="fl">Bán ròng HOSE</div><div class="fv dn">-1.243 tỷ</div><div class="fs2">Hôm nay</div></div>
+        <div class="fb"><div class="fl">Top mua ròng</div><div class="fv" style="font-size:12px;color:var(--green)">VCB, FPT, HPG</div><div class="fs2">Khối lượng lớn</div></div>
+        <div class="fb"><div class="fl">Top bán ròng</div><div class="fv" style="font-size:12px;color:var(--red)">VHM, SSI, VIC</div><div class="fs2">Khối lượng lớn</div></div>
+        <div class="fb"><div class="fl">Mua ròng 5 phiên</div><div class="fv up">+1.820 tỷ</div><div class="fs2">Tuần này</div></div>
+        <div class="fb"><div class="fl">YTD 2025</div><div class="fv dn">-12.400 tỷ</div><div class="fs2">Từ đầu năm</div></div>
       </div>
     </div>
   </div>
 
-</div><!-- end col-left -->
+</div>
 
-<!-- RIGHT -->
-<div class="col-right">
-
-  <!-- MARKET STATS -->
+<div>
   <div class="sec">
-    <div class="sec-head"><div class="sec-title">Tổng quan thị trường</div></div>
-    <div class="stats-grid">
-      <div class="stat-box"><div class="stat-label">VN-Index</div><div class="stat-val up">1.924,3</div><div class="stat-sub up">+15,8 (+0,83%)</div></div>
-      <div class="stat-box"><div class="stat-label">Thanh khoản</div><div class="stat-val">31,4</div><div class="stat-sub">nghìn tỷ đồng</div></div>
-      <div class="stat-box"><div class="stat-label">Tăng / Giảm</div><div class="stat-val">198/134</div><div class="stat-sub">58 đứng giá</div></div>
+    <div class="sh"><div class="st">Tổng quan thị trường</div></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="slabel">VN-Index</div><div class="sval up">1.924,3</div><div class="ssub up">+15,8 (+0,83%)</div></div>
+      <div class="stat"><div class="slabel">Thanh khoản</div><div class="sval">31,4</div><div class="ssub">nghìn tỷ đồng</div></div>
+      <div class="stat"><div class="slabel">Tăng / Giảm</div><div class="sval">198/134</div><div class="ssub">58 đứng giá</div></div>
     </div>
-    <div class="breadth-wrap">
-      <div class="breadth-bar-outer">
-        <div class="b-up" style="flex:198"></div>
-        <div class="b-ref" style="flex:58"></div>
-        <div class="b-dn" style="flex:134"></div>
-      </div>
-      <div class="breadth-legend">
-        <div class="bl-item"><div class="bl-dot" style="background:var(--green)"></div><span class="up">198 tăng</span></div>
-        <div class="bl-item"><div class="bl-dot" style="background:var(--gold)"></div><span class="ref">58 đứng</span></div>
-        <div class="bl-item"><div class="bl-dot" style="background:var(--red)"></div><span class="dn">134 giảm</span></div>
+    <div class="bw">
+      <div class="bo"><div class="bu" style="flex:198"></div><div class="bm" style="flex:58"></div><div class="bd" style="flex:134"></div></div>
+      <div class="bl">
+        <div class="bli"><div class="bld" style="background:var(--green)"></div><span class="up">198 tăng</span></div>
+        <div class="bli"><div class="bld" style="background:var(--gold)"></div><span class="ref">58 đứng</span></div>
+        <div class="bli"><div class="bld" style="background:var(--red)"></div><span class="dn">134 giảm</span></div>
       </div>
     </div>
   </div>
 
-  <!-- NEWS -->
   <div class="sec">
-    <div class="sec-head"><div class="sec-title">Tin tức thị trường</div></div>
-    <div id="newsList"></div>
+    <div class="sh"><div class="st">Tin tức thị trường</div></div>
+    <div id="newsEl"></div>
   </div>
 
-  <!-- INFO -->
   <div class="sec">
-    <div class="sec-head"><div class="sec-title">Về VNMarket</div></div>
-    <div style="padding:12px 18px 16px">
-      <div style="font-size:12px;color:var(--text2);line-height:1.9">
-        <div>• Dữ liệu cập nhật mỗi phiên giao dịch</div>
-        <div>• Nguồn: TCBS, VnDirect, HOSE</div>
-        <div>• Biểu đồ: TradingView Lightweight Charts</div>
-        <div>• Click cổ phiếu để xem biểu đồ chi tiết</div>
-      </div>
-      <div style="margin-top:12px;padding:10px 13px;background:var(--gdim);border-radius:6px;border:1px solid rgba(0,230,118,.15)">
-        <div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:3px;font-family:var(--syne)">VNMARKET</div>
+    <div class="sh"><div class="st">Về VNMarket</div></div>
+    <div style="padding:12px 18px 16px;font-size:12px;color:var(--t2);line-height:1.9">
+      <div>• Dữ liệu cập nhật mỗi phiên giao dịch</div>
+      <div>• Nguồn: TCBS, VnDirect, HOSE</div>
+      <div>• Biểu đồ: TradingView Lightweight Charts</div>
+      <div>• Click cổ phiếu để xem biểu đồ</div>
+      <div style="margin-top:10px;padding:9px 12px;background:var(--gdim);border-radius:6px;border:1px solid rgba(0,230,118,.15)">
+        <div style="font-size:11px;color:var(--green);font-weight:600;font-family:var(--syne)">VNMARKET</div>
         <div style="font-size:12px;color:var(--text)">Phân tích chứng khoán Việt Nam</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">Miễn phí — Không quảng cáo</div>
+        <div style="font-size:11px;color:var(--t3)">Miễn phí — Không quảng cáo</div>
       </div>
     </div>
   </div>
-
-</div><!-- end col-right -->
-</div><!-- end layout -->
+</div>
+</div>
 
 <footer>
-  <div class="ft-note"><span class="ft-dot"></span>Dữ liệu phiên giao dịch 19/05/2025 — Cập nhật 15:00</div>
-  <div class="ft-note">VNMarket © 2025 — Không phải tư vấn đầu tư</div>
+  <div class="fn"><span class="fdot"></span>Dữ liệu phiên 19/05/2025 — 15:00</div>
+  <div class="fn">VNMarket © 2025 — Không phải tư vấn đầu tư</div>
 </footer>
 
 <script>
-// ── DỮ LIỆU THỊ TRƯỜNG ──────────────────────────────
 const STOCKS = [
-  {sym:'VCB', name:'Vietcombank',      px:92400,  ref:90900,  vol:8230000},
-  {sym:'TCB', name:'Techcombank',      px:25850,  ref:25200,  vol:16800000},
-  {sym:'FPT', name:'FPT Corporation',  px:131500, ref:128000, vol:3900000},
-  {sym:'HPG', name:'Hòa Phát Group',   px:26400,  ref:25800,  vol:21200000},
-  {sym:'MBB', name:'MB Bank',          px:23100,  ref:22600,  vol:18900000},
-  {sym:'VHM', name:'Vinhomes',         px:40200,  ref:41500,  vol:5400000},
-  {sym:'VNM', name:'Vinamilk',         px:71800,  ref:72400,  vol:2600000},
-  {sym:'SSI', name:'SSI Securities',   px:34200,  ref:33500,  vol:12100000},
-  {sym:'ACB', name:'ACB Bank',         px:24800,  ref:24200,  vol:15600000},
-  {sym:'VIC', name:'Vingroup',         px:40500,  ref:41200,  vol:4800000},
-  {sym:'MSN', name:'Masan Group',      px:88500,  ref:86000,  vol:3700000},
-  {sym:'VPB', name:'VPBank',           px:18800,  ref:18300,  vol:26400000},
-  {sym:'GAS', name:'PV Gas',           px:76400,  ref:75200,  vol:2100000},
-  {sym:'BID', name:'BIDV',             px:47200,  ref:46500,  vol:9800000},
-  {sym:'CTG', name:'VietinBank',       px:35600,  ref:34900,  vol:11200000},
+  {sym:'VCB',name:'Vietcombank',px:92400,ref:90900,vol:8230000},
+  {sym:'TCB',name:'Techcombank',px:25850,ref:25200,vol:16800000},
+  {sym:'FPT',name:'FPT Corporation',px:131500,ref:128000,vol:3900000},
+  {sym:'HPG',name:'Hòa Phát Group',px:26400,ref:25800,vol:21200000},
+  {sym:'MBB',name:'MB Bank',px:23100,ref:22600,vol:18900000},
+  {sym:'VHM',name:'Vinhomes',px:40200,ref:41500,vol:5400000},
+  {sym:'VNM',name:'Vinamilk',px:71800,ref:72400,vol:2600000},
+  {sym:'SSI',name:'SSI Securities',px:34200,ref:33500,vol:12100000},
+  {sym:'ACB',name:'ACB Bank',px:24800,ref:24200,vol:15600000},
+  {sym:'VIC',name:'Vingroup',px:40500,ref:41200,vol:4800000},
+  {sym:'MSN',name:'Masan Group',px:88500,ref:86000,vol:3700000},
+  {sym:'VPB',name:'VPBank',px:18800,ref:18300,vol:26400000},
+  {sym:'GAS',name:'PV Gas',px:76400,ref:75200,vol:2100000},
+  {sym:'BID',name:'BIDV',px:47200,ref:46500,vol:9800000},
+  {sym:'CTG',name:'VietinBank',px:35600,ref:34900,vol:11200000},
+  {sym:'NVL',name:'Novaland',px:11200,ref:11800,vol:31000000},
+  {sym:'DXG',name:'Đất Xanh Group',px:9850,ref:10200,vol:22400000},
+  {sym:'PLX',name:'Petrolimex',px:37200,ref:36600,vol:3100000},
+  {sym:'REE',name:'REE Corporation',px:68500,ref:67200,vol:2800000},
+  {sym:'PNJ',name:'Phú Nhuận Jewelry',px:94200,ref:92800,vol:1900000},
+];
+const SECTORS=[
+  {name:'Công nghệ thông tin',pct:3.2},{name:'Thép & Vật liệu',pct:2.4},
+  {name:'Ngân hàng',pct:1.8},{name:'Dịch vụ tài chính',pct:1.4},
+  {name:'Bán lẻ',pct:1.1},{name:'Năng lượng & Dầu khí',pct:0.9},
+  {name:'Xây dựng',pct:0.7},{name:'Hàng tiêu dùng',pct:0.5},
+  {name:'Y tế & Dược phẩm',pct:0.3},{name:'Dệt may & Thủy sản',pct:-0.5},
+  {name:'Bất động sản',pct:-0.9},{name:'Hàng không',pct:-1.4},
+];
+const NEWS=[
+  {sym:'VCB',title:'Vietcombank công bố lợi nhuận Q1/2025 tăng trưởng 21% so với cùng kỳ',time:'1 giờ trước'},
+  {sym:'FPT',title:'FPT ký kết hợp đồng AI trị giá 50 triệu USD với tập đoàn Nhật Bản',time:'2 giờ trước'},
+  {sym:'HPG',title:'Hòa Phát tăng sản lượng thép 15% trong tháng 4, hưởng lợi từ đầu tư công',time:'3 giờ trước'},
+  {sym:'TCB',title:'Techcombank phát hành 5.000 tỷ trái phiếu với lãi suất hấp dẫn',time:'4 giờ trước'},
+  {sym:'VHM',title:'Vinhomes bàn giao 9.200 căn hộ Q1/2025, vượt kế hoạch 18%',time:'5 giờ trước'},
+  {sym:'MBB',title:'MB Bank tăng trưởng tín dụng 13,4% trong 4 tháng đầu năm 2025',time:'6 giờ trước'},
 ];
 
-const SECTORS = [
-  {name:'Ngân hàng',          pct:1.8},
-  {name:'Công nghệ thông tin',pct:3.2},
-  {name:'Thép & Vật liệu',    pct:2.4},
-  {name:'Dịch vụ tài chính',  pct:1.4},
-  {name:'Năng lượng & Dầu khí',pct:0.9},
-  {name:'Hàng tiêu dùng',     pct:0.5},
-  {name:'Y tế & Dược phẩm',   pct:0.3},
-  {name:'Bất động sản',       pct:-0.9},
-  {name:'Hàng không',         pct:-1.4},
-  {name:'Dệt may & Thủy sản', pct:-0.5},
-  {name:'Xây dựng',           pct:0.7},
-  {name:'Bán lẻ',             pct:1.1},
-];
+let chart, series, curSym='VCB', curDays=1, fMode='up';
 
-const NEWS = [
-  {sym:'VCB', title:'Vietcombank công bố lợi nhuận Q1/2025 tăng trưởng 21% so với cùng kỳ', time:'1 giờ trước'},
-  {sym:'FPT', title:'FPT ký kết hợp đồng AI trị giá 50 triệu USD với tập đoàn Nhật Bản', time:'2 giờ trước'},
-  {sym:'HPG', title:'Hòa Phát tăng sản lượng thép 15% trong tháng 4, hưởng lợi từ đầu tư công', time:'3 giờ trước'},
-  {sym:'TCB', title:'Techcombank phát hành 5.000 tỷ trái phiếu, lãi suất hấp dẫn', time:'4 giờ trước'},
-  {sym:'VHM', title:'Vinhomes bàn giao 9.200 căn hộ Q1/2025, vượt kế hoạch 18%', time:'5 giờ trước'},
-  {sym:'MBB', title:'MB Bank tăng trưởng tín dụng 13,4% trong 4 tháng đầu năm 2025', time:'6 giờ trước'},
-  {sym:'MSN', title:'Masan Group mở rộng chuỗi WinMart lên 3.800 cửa hàng toàn quốc', time:'7 giờ trước'},
-];
+function d(v){return v>0?'up':v<0?'dn':'ref';}
+function fV(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':n;}
+function pct(s){return (s.px-s.ref)/s.ref*100;}
 
-// ── CHART ────────────────────────────────────────────
-let chart, candleSeries, curSym = 'VCB', curPeriod = '1D', filterMode = 'up';
-
-function genCandles(sym, period) {
-  const base = {VCB:92400,TCB:25850,FPT:131500,HPG:26400,MBB:23100,VHM:40200,VNM:71800,SSI:34200,ACB:24800,VIC:40500,MSN:88500,VPB:18800,GAS:76400,BID:47200,CTG:35600};
-  const p0 = (base[sym]||50000) * 0.82;
-  const bars = {D1:80,W1:80,M1:22,M3:66,Y1:252}[period.replace('1','1')
-    .replace('1D','D1').replace('1W','W1').replace('1M','M1').replace('3M','M3').replace('1Y','Y1')]||22;
-  const isIntra = period==='1D'||period==='1W';
-  const step = isIntra ? 300 : 86400;
-  const now = Math.floor(Date.now()/1000);
-  const data=[]; let p=p0;
+function makeBars(sym,days){
+  const bases={VCB:92400,TCB:25850,FPT:131500,HPG:26400,MBB:23100,VHM:40200,VNM:71800,SSI:34200,ACB:24800,VIC:40500,MSN:88500,VPB:18800,GAS:76400,BID:47200,CTG:35600,NVL:11200,DXG:9850,PLX:37200,REE:68500,PNJ:94200};
+  const base=bases[sym]||50000;
+  const bars=days<=1?78:days<=7?78:days<=30?22:days<=90?66:252;
+  const step=days<=7?300:86400;
+  const now=Math.floor(Date.now()/1000);
+  const data=[];let p=base*0.85;
   for(let i=bars;i>=0;i--){
-    p *= 1+(Math.random()-.47)*.022;
-    const o=p, c=p*(1+(Math.random()-.5)*.013);
-    const h=Math.max(o,c)*(1+Math.random()*.009);
-    const l=Math.min(o,c)*(1-Math.random()*.009);
-    data.push({time:now-i*step, open:Math.round(o), high:Math.round(h), low:Math.round(l), close:Math.round(c)});
+    p*=1+(Math.random()-.47)*.022;
+    const o=p,c=p*(1+(Math.random()-.5)*.013);
+    const h=Math.max(o,c)*(1+Math.random()*.008);
+    const l=Math.min(o,c)*(1-Math.random()*.008);
+    data.push({time:now-i*step,open:Math.round(o),high:Math.round(h),low:Math.round(l),close:Math.round(c)});
   }
   return data;
 }
@@ -381,14 +327,14 @@ function genCandles(sym, period) {
 function initChart(){
   const el=document.getElementById('chartBox');
   chart=LightweightCharts.createChart(el,{
-    width:el.clientWidth, height:260,
+    width:el.clientWidth,height:260,
     layout:{background:{type:'solid',color:'#080c0a'},textColor:'#6e9478'},
     grid:{vertLines:{color:'#1f2d21'},horzLines:{color:'#1f2d21'}},
     crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
     rightPriceScale:{borderColor:'#1f2d21'},
     timeScale:{borderColor:'#1f2d21',timeVisible:true},
   });
-  candleSeries=chart.addCandlestickSeries({
+  series=chart.addCandlestickSeries({
     upColor:'#00e676',downColor:'#ff4f4f',
     borderUpColor:'#00e676',borderDownColor:'#ff4f4f',
     wickUpColor:'#00c853',wickDownColor:'#e53935',
@@ -396,104 +342,109 @@ function initChart(){
   new ResizeObserver(()=>chart.applyOptions({width:el.clientWidth})).observe(el);
 }
 
-function loadChart(sym,period){
-  curSym=sym; curPeriod=period;
-  const data=genCandles(sym,period);
-  candleSeries.setData(data);
-  const last=data[data.length-1], first=data[0];
-  const chg=((last.close-first.open)/first.open*100);
-  const diff=last.close-first.open;
-  document.getElementById('cSym').textContent=sym;
-  document.getElementById('cPx').textContent=last.close.toLocaleString('vi-VN');
-  const el=document.getElementById('cChg');
-  const dir=chg>0?'▲':chg<0?'▼':'–';
-  el.textContent=`${dir} ${Math.abs(diff).toLocaleString('vi-VN')} (${chg>=0?'+':''}${chg.toFixed(2)}%)`;
-  el.className='chart-chg '+(chg>0?'up':chg<0?'dn':'ref');
+function loadChart(sym,days){
+  curSym=sym;curDays=days;
+  const data=makeBars(sym,days);
+  series.setData(data);
   chart.timeScale().fitContent();
-  document.querySelectorAll('.sym-btn').forEach(b=>b.classList.toggle('on',b.dataset.s===sym));
+  const last=data[data.length-1],first=data[0];
+  const diff=last.close-first.open,p=(diff/first.open*100);
+  const cl=d(p),arrow=p>0?'▲':p<0?'▼':'–';
+  document.getElementById('cSym').textContent=sym;
+  const pxEl=document.getElementById('cPx');
+  pxEl.textContent=last.close.toLocaleString('vi-VN');
+  pxEl.className='c-px '+cl;
+  const chgEl=document.getElementById('cChg');
+  chgEl.textContent=arrow+' '+Math.abs(diff).toLocaleString('vi-VN')+' ('+(p>=0?'+':'')+p.toFixed(2)+'%)';
+  chgEl.className='c-chg '+cl;
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.s===sym));
 }
 
-function setPeriod(p,btn){
-  document.querySelectorAll('.btns .btn').forEach(b=>{if(b.closest('.sec-head')===btn.closest('.sec-head'))b.classList.remove('on')});
-  btn.classList.add('on');
-  loadChart(curSym,p);
+function setPeriod(days,btn){
+  document.querySelectorAll('.ca .btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');loadChart(curSym,days);
 }
 
-// ── SYM BUTTONS ──────────────────────────────────────
-function buildSymBtns(){
-  document.getElementById('symBtns').innerHTML=
-    STOCKS.slice(0,10).map(s=>`<button class="sym-btn${s.sym===curSym?' on':''}" data-s="${s.sym}" onclick="loadChart('${s.sym}','${curPeriod}')">${s.sym}</button>`).join('');
+function buildSymRow(){
+  document.getElementById('symRow').innerHTML=STOCKS.slice(0,10).map(s=>
+    `<button class="sbtn${s.sym===curSym?' on':''}" data-s="${s.sym}" onclick="loadChart('${s.sym}',${curDays})">${s.sym}</button>`
+  ).join('');
 }
 
-// ── TABLE ────────────────────────────────────────────
 function buildTable(mode){
-  const data=STOCKS.map(s=>({...s,pct:(s.px-s.ref)/s.ref*100}));
-  if(mode==='up') data.sort((a,b)=>b.pct-a.pct);
-  else if(mode==='dn') data.sort((a,b)=>a.pct-b.pct);
+  fMode=mode;
+  const data=STOCKS.map(s=>({...s,p:pct(s)}));
+  if(mode==='up')data.sort((a,b)=>b.p-a.p);
+  else if(mode==='dn')data.sort((a,b)=>a.p-b.p);
   else data.sort((a,b)=>b.vol-a.vol);
-  const maxVol=Math.max(...data.map(d=>d.vol));
-  const dir=v=>v>0?'up':v<0?'dn':'ref';
-  const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':n;
-  document.getElementById('tblWrap').innerHTML=`
-    <table class="stk-table">
-      <thead><tr>
-        <th>Mã / Tên</th><th>Giá (đ)</th><th>% ±</th><th>Khối lượng</th>
-      </tr></thead>
-      <tbody>${data.slice(0,12).map(s=>`
-        <tr onclick="loadChart('${s.sym}','${curPeriod}')">
-          <td><div class="sym-code">${s.sym}</div><div class="sym-name">${s.name}</div></td>
-          <td><span class="px-val ${dir(s.pct)}">${s.px.toLocaleString('vi-VN')}</span></td>
-          <td><span class="pill ${dir(s.pct)}">${s.pct>=0?'+':''}${s.pct.toFixed(2)}%</span></td>
-          <td><div class="vol-wrap"><span style="font-size:11px;color:var(--text3)">${fmt(s.vol)}</span>
-            <div class="vol-bg"><div class="vol-fill" style="width:${(s.vol/maxVol*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':s.pct<0?'var(--red)':'var(--gold)'}"></div></div>
-          </div></td>
-        </tr>`).join('')}
-      </tbody>
-    </table>`;
+  const maxV=Math.max(...data.map(x=>x.vol));
+  document.getElementById('tblEl').innerHTML=`<table>
+    <thead><tr><th>Mã / Tên</th><th>Giá (đ)</th><th>% ±</th><th>Khối lượng</th></tr></thead>
+    <tbody>${data.map(s=>`<tr onclick="loadChart('${s.sym}',${curDays})">
+      <td><div class="sc">${s.sym}</div><div class="sn">${s.name}</div></td>
+      <td><span class="pxv ${d(s.p)}">${s.px.toLocaleString('vi-VN')}</span></td>
+      <td><span class="pill ${d(s.p)}">${s.p>=0?'+':''}${s.p.toFixed(2)}%</span></td>
+      <td><div class="vb"><span style="font-size:11px;color:var(--t3)">${fV(s.vol)}</span>
+        <div class="vbg"><div class="vbf" style="width:${(s.vol/maxV*100).toFixed(0)}%;background:${s.p>0?'var(--green)':s.p<0?'var(--red)':'var(--gold)'}"></div></div>
+      </div></td>
+    </tr>`).join('')}</tbody></table>`;
 }
 
-function filterTbl(mode,btn){
-  filterMode=mode;
+function filterStocks(m,btn){
   document.querySelectorAll('#tc-top .btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  buildTable(mode);
+  btn.classList.add('on');buildTable(m);
 }
 
-// ── SECTORS ──────────────────────────────────────────
 function buildSectors(){
   const max=Math.max(...SECTORS.map(s=>Math.abs(s.pct)));
-  const dir=v=>v>0?'up':v<0?'dn':'ref';
-  document.getElementById('secList').innerHTML=SECTORS.map(s=>`
-    <div class="sector-row">
-      <span class="sector-name">${s.name}</span>
-      <div class="sector-bar-bg"><div class="sector-bar" style="width:${(Math.abs(s.pct)/max*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':'var(--red)'}"></div></div>
-      <span class="sector-pct ${dir(s.pct)}">${s.pct>0?'+':''}${s.pct.toFixed(1)}%</span>
+  document.getElementById('secEl').innerHTML=SECTORS.map(s=>`
+    <div class="sr">
+      <span class="sn2">${s.name}</span>
+      <div class="sbg"><div class="sb2" style="width:${(Math.abs(s.pct)/max*100).toFixed(0)}%;background:${s.pct>0?'var(--green)':'var(--red)'}"></div></div>
+      <span class="sp ${d(s.pct)}">${s.pct>0?'+':''}${s.pct.toFixed(1)}%</span>
     </div>`).join('');
 }
 
-// ── NEWS ─────────────────────────────────────────────
 function buildNews(){
-  document.getElementById('newsList').innerHTML=NEWS.map(n=>`
-    <div class="news-item">
-      <span class="news-sym">${n.sym}</span>
-      <div class="news-title">${n.title}</div>
-      <div class="news-time">${n.time}</div>
-    </div>`).join('');
+  document.getElementById('newsEl').innerHTML=NEWS.map(n=>`
+    <div class="ni"><span class="ns">${n.sym}</span>
+    <div class="nt">${n.title}</div>
+    <div class="ntime">${n.time}</div></div>`).join('');
 }
 
-// ── TICKER ───────────────────────────────────────────
 function buildTicker(){
-  const dir=v=>v>0?'up':v<0?'dn':'ref';
-  const arr=STOCKS.map(s=>{const pct=(s.px-s.ref)/s.ref*100; return `
-    <div class="t-item">
-      <span class="t-sym">${s.sym}</span>
-      <span class="t-px">${s.px.toLocaleString('vi-VN')}</span>
-      <span class="${dir(pct)}">${pct>0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%</span>
-    </div>`;}).join('');
-  document.getElementById('tickerEl').innerHTML=arr+arr;
+  const items=STOCKS.map(s=>{
+    const p=pct(s);
+    return `<div class="ti"><span style="color:var(--t2);font-weight:500">${s.sym}</span><span>${s.px.toLocaleString('vi-VN')}</span><span class="${d(p)}">${p>0?'▲':'▼'} ${Math.abs(p).toFixed(2)}%</span></div>`;
+  }).join('');
+  document.getElementById('tickerEl').innerHTML=items+items;
 }
 
-// ── TABS ─────────────────────────────────────────────
+// SEARCH
+const inp=document.getElementById('searchInput');
+const drop=document.getElementById('sdrop');
+inp.addEventListener('input',function(){
+  const q=this.value.trim().toUpperCase();
+  if(!q){drop.classList.remove('open');return;}
+  const res=STOCKS.filter(s=>s.sym.includes(q)||s.name.toUpperCase().includes(q));
+  if(!res.length){drop.classList.remove('open');return;}
+  drop.innerHTML=res.map(s=>{
+    const p=pct(s);
+    return `<div class="sdi" onclick="pickSym('${s.sym}')">
+      <span class="sdi-sym">${s.sym}</span>
+      <span class="sdi-name">${s.name}</span>
+      <span class="sdi-pct ${d(p)}">${p>=0?'+':''}${p.toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+  drop.classList.add('open');
+});
+function pickSym(sym){
+  loadChart(sym,curDays);
+  inp.value='';drop.classList.remove('open');
+  document.getElementById('chartBox').scrollIntoView({behavior:'smooth',block:'center'});
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))drop.classList.remove('open');});
+
 function switchTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
@@ -501,14 +452,16 @@ function switchTab(id,btn){
   document.getElementById('tc-'+id).classList.add('on');
 }
 
-// ── INIT ─────────────────────────────────────────────
-initChart();
-buildSymBtns();
-loadChart('VCB','1D');
-buildTable('up');
-buildSectors();
-buildNews();
-buildTicker();
+// INIT — dùng window.onload để chắc chắn script LightweightCharts đã load
+window.onload=function(){
+  initChart();
+  buildSymRow();
+  loadChart('VCB',1);
+  buildTable('up');
+  buildSectors();
+  buildNews();
+  buildTicker();
+};
 </script>
 </body>
 </html>
